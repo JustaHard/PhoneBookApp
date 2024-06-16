@@ -78,4 +78,8 @@ def export_data():
     return
 
 def save_data():
-    return
+    DataToSave = [SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry]
+    fields = ['Фамилия', 'Имя', 'Номер телефона', 'Комментарий']
+    with open ('.\Phone_book\Phone_book.txt', 'r') as phb:
+        DataToSave = dict(zip(fields, DataToSave))
+        phb.append(DataToSave)
