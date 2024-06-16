@@ -139,3 +139,8 @@ def get_phone_book():
     with open (filepath, 'r') as phb:
         for line in phb:
             PhoneBook.append(tuple(line.split(',')))
+
+def update_table():
+    get_phone_book()
+    delete_table()
+    create_table()
