@@ -10,7 +10,7 @@ def show_main_window():
     return
 
 def show_all():
-    global CurrentWindow, PhoneBook
+    global CurrentWindow, PhoneBook, ShowAllWindow
 
     # Закрываем предыдущее окно
     destroy_prev_window
@@ -55,27 +55,7 @@ def show_all():
         SearchByNumberButton = tk.Button(SearchByNumberFrame, text='Поиск', command=search_by_number)
         SearchByNumberButton.pack(side='left')
 
-        # Создаем таблицу из полученных контактов
-        TableFrame = tk.Frame(ShowAllWindow)
-        TableFrame.pack(pady=10, padx=10, side='top')
-
-        columns = (1, 2, 3, 4)
-        Table = ttk.Treeview(TableFrame, columns=columns, show='headings', height=len(PhoneBook))
-        
-        Table.heading(1, text='Фамилия')
-        Table.heading(2, text='Имя')
-        Table.heading(3, text='Номер телефона')
-        Table.heading(4, text='Комментарий')    
-
-        Table.column(1, width=100)
-        Table.column(2, width=100)
-        Table.column(3, width=110)
-        Table.column(4, width=110)
-
-        for line in PhoneBook:
-            Table.insert('', tk.END, values=line)
-
-        Table.pack()
+        create_table()
 
     except:
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
@@ -92,3 +72,25 @@ def export_data():
 
 def save_data():
     return
+
+def create_table():
+    TableFrame = tk.Frame(ShowAllWindow)
+    TableFrame.pack(pady=10, padx=10, side='top')
+
+    columns = (1, 2, 3, 4)
+    Table = ttk.Treeview(TableFrame, columns=columns, show='headings', height=len(PhoneBook))
+    
+    Table.heading(1, text='Фамилия')
+    Table.heading(2, text='Имя')
+    Table.heading(3, text='Номер телефона')
+    Table.heading(4, text='Комментарий')    
+
+    Table.column(1, width=100)
+    Table.column(2, width=100)
+    Table.column(3, width=110)
+    Table.column(4, width=110)
+
+    for line in PhoneBook:
+        Table.insert('', tk.END, values=line)
+
+    Table.pack()
