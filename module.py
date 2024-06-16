@@ -10,7 +10,7 @@ def show_main_window():
     return
 
 def show_all():
-    global CurrentWindow, PhoneBook, ShowAllWindow
+    global CurrentWindow, PhoneBook, ShowAllWindow, SearchByNumberEntry
 
     # Закрываем предыдущее окно
     destroy_prev_window
@@ -94,3 +94,24 @@ def create_table():
         Table.insert('', tk.END, values=line)
 
     Table.pack()
+
+def surname_sort():
+    global PhoneBook
+
+    PhoneBook = sorted(PhoneBook, key=lambda x: x[0])
+    detele_table()
+    create_table()
+
+def name_sort():
+    global PhoneBook
+
+    PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
+    delete_table()
+    create_table()
+
+def search_by_number():
+    global PhoneBook
+
+    PhoneBook = list(filter(lambda x: SearchByNumberEntry.get in x, PhoneBook[2]))
+    delete_table()
+    create_table()
