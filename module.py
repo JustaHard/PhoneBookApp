@@ -3,7 +3,9 @@ import tkinter as tk
 CurrentWindow = None
 
 def destroy_prev_window():
-    return
+    global CurrentWindow
+    if CurrentWindow is not None:
+        CurrentWindow.destroy()
 
 def show_main_window():
     return
