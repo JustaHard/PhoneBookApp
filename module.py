@@ -123,7 +123,8 @@ def save_data():
     # Решаем проблему с кучей пустых строк
     for i in range(len(PhoneBook)):
         if '\n' in PhoneBook[i][-1]:
-            PhoneBook[i][-1] = PhoneBook[i][-1][:-2]
+            PhoneBook[i][-1] = PhoneBook[i][-1].split('\n')
+            PhoneBook[i][-1] = ''.join(element for element in PhoneBook[i][-1])
 
     # Заносим новый контакт в список, если до этого его там не было
     if DataToSave not in PhoneBook:
@@ -132,7 +133,5 @@ def save_data():
     # Обновляем список контактов
     with open (filepath, 'w') as phout:
         for line in PhoneBook:
-            s = ''
-            for data in line:
-                s = s + data + ','
-            phout.write(f'{s[:-1]}\n')
+            s = ','.join(data for data in line)
+            phout.write(f'{s}\n')
