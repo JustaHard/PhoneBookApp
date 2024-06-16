@@ -78,4 +78,31 @@ def export_data():
     return
 
 def save_data():
-    return
+    PhoneBook = []
+    DataToSave = [SurnameEntry.get(), NameEntry.get(), PhoneNumberEntry.get(), CommentEntry.get()]
+    filepath = 'Saved_Data/Phone_book.txt'
+
+    # Получаем список уже существующих контактов, если такие есть
+    try:
+        with open (filepath, 'r') as phb:
+            for line in phb:
+                PhoneBook.append(line.split(','))
+    except:
+        pass
+
+    # Решаем проблему с кучей пустых строк
+    for i in range(len(PhoneBook)):
+        if '\n' in PhoneBook[i][-1]:
+            PhoneBook[i][-1] = PhoneBook[i][-1][:-2]
+
+    # Заносим новый контакт в список, если до этого его там не было
+    if DataToSave not in PhoneBook:
+        PhoneBook.append(DataToSave)
+
+    # Обновляем список контактов
+    with open (filepath, 'w') as phout:
+        for line in PhoneBook:
+            s = ''
+            for data in line:
+                s = s + data + ','
+            phout.write(f'{s[:-1]}\n')
