@@ -18,6 +18,8 @@ def import_data():
     destroy_prev_window()
 
     # Создаем вспомогательное окно для ввода данных о новом контакте
+    global SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry
+
     ImportDataWindow = tk.Tk()    
     ImportDataWindow.title("Введите данные о новом контакте")
     ImportDataWindow.geometry("400x300")
