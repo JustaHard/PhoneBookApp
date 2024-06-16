@@ -9,23 +9,14 @@ def destroy_prev_window():
         CurrentWindow.destroy()
 
 def show_main_window():
-    global CurrentWindow
-
-    # Закрываем предыдущее окно
-    destroy_prev_window()
-
-    # Создаем главное окно приложения
-    root = tk.Tk()
-    root.title("Управление телефонным справочником")
-    root.geometry("400x300")
-    CurrentWindow = root
+    root = create_window('Управление телефонным справочником', '400x300')
 
     # Создаем кнопку для отображения всего справочника
     ShowAllButton = tk.Button(root, text='Отобразить весь справочник', command=show_all)
     ShowAllButton.pack(pady=10)
 
     # Создаем кнопку для экспорта данных из справочника
-    ExportDataButton = tk.Button(root, text='Получить данные о существующем контакте', command=export_data)
+    ExportDataButton = tk.Button(root, text='Взаимодействие с сохраненным контактом', command=export_data)
     ExportDataButton.pack(pady=10)
 
     # Создаем кнопку для импорта данных в справочник
@@ -40,16 +31,9 @@ def show_main_window():
     root.mainloop()
 
 def show_all():
-    global CurrentWindow, ShowAllWindow, SearchByNumberEntry
+    global ShowAllWindow, SearchByNumberEntry
 
-    # Закрываем предыдущее окно
-    destroy_prev_window
-
-    # Создаем новое окно для отображения списка контактов
-    ShowAllWindow = tk.Tk()
-    ShowAllWindow.title('Список всех сохраненных контактов')
-    ShowAllWindow.geometry('700x500')
-    CurrentWindow = ShowAllWindow
+    ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
 
     try:
     # Получаем список сохраненных контактов
@@ -97,16 +81,9 @@ def show_all():
     ShowAllWindow.mainloop()
 
 def import_data():
-    global CurrentWindow, SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry
+    global SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry
     
-    # Закрываем предыдущее окно
-    destroy_prev_window()
-
-    # Создаем вспомогательное окно для ввода данных о новом контакте
-    ImportDataWindow = tk.Tk()    
-    ImportDataWindow.title("Введите данные о новом контакте")
-    ImportDataWindow.geometry("400x300")
-    CurrentWindow = ImportDataWindow
+    ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
 
     # Создаем поле ввода фамилии
     SurnameFrame = tk.Frame(ImportDataWindow)
@@ -261,3 +238,13 @@ def update_table():
     get_phone_book()
     delete_table()
     create_table()
+
+def create_window(title, geometry):
+    global CurrentWindow
+
+    destroy_prev_window()
+    name = tk.Tk()
+    name.title(title)
+    name.geometry(geometry)
+    CurrentWindow = name
+    return name
