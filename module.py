@@ -10,7 +10,7 @@ def show_main_window():
     return
 
 def show_all():
-    global CurrentWindow, PhoneBook, ShowAllWindow, SearchByNumberEntry
+    global CurrentWindow, ShowAllWindow, SearchByNumberEntry
 
     # Закрываем предыдущее окно
     destroy_prev_window
@@ -23,8 +23,6 @@ def show_all():
 
     try:
     # Получаем список сохраненных контактов
-        get_phone_book()
-
         # Добавляем область для дополнительного взаимодействия с таблицей
         InteractionFrame = tk.Frame(ShowAllWindow)
         InteractionFrame.pack(pady=10, padx=10, side='top')
@@ -50,15 +48,16 @@ def show_all():
         SearchByNumberButton = tk.Button(SearchByNumberFrame, text='Поиск', command=search_by_number)
         SearchByNumberButton.pack(side='left')
 
+        get_phone_book()
         create_table()
 
         # Создаем кнопку для возврата таблицы в исходное состояние
         UpdateTableButton = tk.Button(ShowAllWindow, text='Вернуть таблицу к исходному состоянию', command=update_table)
-        UpdateTableButton.pack(pady=10)
+        UpdateTableButton.pack(pady=10, side='bottom')
 
         # Создаем кнопку для возврата на главный экран
         ShowMainWindowButton = tk.Button(ShowAllWindow, text='Назад', command=show_main_window)
-        ShowMainWindowButton.pack(pady=10)
+        ShowMainWindowButton.pack(pady=10, side='bottom')
 
     except:
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
@@ -133,6 +132,8 @@ def delete_table():
         TableFrame = None
 
 def get_phone_book():
+    global PhoneBook
+
     PhoneBook = []
     filepath = 'Saved_Data/Phone_book.txt'
 
