@@ -45,14 +45,8 @@ def show_all():
         NameSortButton = create_button(InteractionFrame, 'Сортировать по имени', name_sort, padx=10, side='left')
 
         # Добавляем поиск по номеру
-        SearchByNumberFrame = tk.Frame(InteractionFrame)
-        SearchByNumberFrame.pack(side='right')
-
-        SearchByNumberLabel = tk.Label(SearchByNumberFrame, text='Поиск по номеру:')
-        SearchByNumberLabel.pack(side='left')
-
-        SearchByNumberEntry = tk.Entry(SearchByNumberFrame, width=30)
-        SearchByNumberEntry.pack(side='left')
+        SearchByNumberFrame, SearchByNumberLabel, SearchByNumberEntry = create_entry(InteractionFrame, 'Поиск по номеру:', 
+                                                                                     fside='right', lside='left', eside='left')
 
         SearchByNumberButton = create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
 
@@ -78,44 +72,20 @@ def import_data():
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
 
     # Создаем поле ввода фамилии
-    SurnameFrame = tk.Frame(ImportDataWindow)
-    SurnameFrame.pack(pady=10, padx=20)
-
-    SurnameLabel = tk.Label(SurnameFrame, text='Введите фамилию: ')
-    SurnameLabel.pack(side='left')
-
-    SurnameEntry = tk.Entry(SurnameFrame, width=30)
-    SurnameEntry.pack(side="left")
+    SurnameFrame, SurnameLabel, SurnameEntry = create_entry(ImportDataWindow, 'Введите фамилию: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')
 
     # Создаем поле ввода имени
-    NameFrame = tk.Frame(ImportDataWindow)
-    NameFrame.pack(pady=10, padx=20)
-
-    NameLabel = tk.Label(NameFrame, text='Введите имя: ')
-    NameLabel.pack(side='left')
-
-    NameEntry = tk.Entry(NameFrame, width=30)
-    NameEntry.pack(side="left")
+    NameFrame, NameLabel, NameEntry = create_entry(ImportDataWindow, 'Введите имя: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')
 
     # Создаем поле ввода номера телефона
-    PhoneNumberFrame = tk.Frame(ImportDataWindow)
-    PhoneNumberFrame.pack(pady=10, padx=20)
-
-    PhoneNumberLabel = tk.Label(PhoneNumberFrame, text='Введите номер телефона: ')
-    PhoneNumberLabel.pack(side='left')
-
-    PhoneNumberEntry = tk.Entry(PhoneNumberFrame, width=30)
-    PhoneNumberEntry.pack(side="left")
+    PhoneNumberFrame, PhoneNumberLabel, PhoneNumberEntry = create_entry(ImportDataWindow, 'Введите номер телефона: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')
 
     # Создаем поле ввода комментария
-    CommentFrame = tk.Frame(ImportDataWindow)
-    CommentFrame.pack(pady=10, padx=20)
-
-    CommentLabel = tk.Label(CommentFrame, text='Введите комментарий: ')
-    CommentLabel.pack(side='left')
-
-    CommentEntry = tk.Entry(CommentFrame, width=30)
-    CommentEntry.pack(side="left")
+    CommentFrame, CommentLabel, CommentEntry = create_entry(ImportDataWindow, 'Введите комментарий: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')
 
     # Создаем кнопку для сохранения данных
     SaveDataButton = create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
@@ -243,3 +213,15 @@ def create_button(area, text, func, pady=None, padx=None, side=None):
     Button = tk.Button(area, text=text, command=func)
     Button.pack(pady=pady, padx=padx, side=side)
     return Button
+
+def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady=None, fpadx=None):
+    Frame = tk.Frame(area)
+    Frame.pack(side=fside, padx=fpadx, pady=fpady)
+
+    Label = tk.Label(Frame, text=text)
+    Label.pack(side=lside)
+
+    Entry = tk.Entry(Frame, width=width)
+    Entry.pack(side=eside)
+
+    return Frame, Label, Entry
