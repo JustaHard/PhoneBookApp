@@ -16,3 +16,6 @@ def import_data():
 
 def export_data():
     return
+
+def save_data():
+    return
