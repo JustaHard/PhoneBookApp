@@ -15,9 +15,6 @@ def show_main_window():
     # Создаем кнопку для отображения всего справочника
     create_button(root, 'Отобразить весь справочник', show_all, pady=10)
 
-    # Создаем кнопку для экспорта данных из справочника
-    create_button(root, "Взаимодействие с сохраненными контактами", export_data, pady=10)
-
     # Создаем кнопку для импорта данных в справочник
     create_button(root, 'Добавить новый контакт', import_data, pady=10)
 
@@ -96,9 +93,6 @@ def import_data():
 
     # Запуск цикла обработки событий
     ImportDataWindow.mainloop()
-
-def export_data():
-    return
 
 def save_data():
     filepath = 'Saved_Data/Phone_book.txt'
