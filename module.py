@@ -74,7 +74,7 @@ def save_data():
     return
 
 def create_table():
-    global Table
+    global TableFrame
 
     TableFrame = tk.Frame(ShowAllWindow)
     TableFrame.pack(pady=10, padx=10, side='top')
@@ -114,12 +114,17 @@ def name_sort():
 def search_by_number():
     global PhoneBook
 
-    PhoneBook = list(filter(lambda x: SearchByNumberEntry.get in x, PhoneBook[2]))
+    LinesWithNumber = []
+    for line in PhoneBook:
+        if SearchByNumberEntry.get() in line[2]:
+            LinesWithNumber.append(line)
+            
+    PhoneBook = LinesWithNumber
     delete_table()
     create_table()
 
 def delete_table():
-    global Table
-    if Table:
-        Table.destroy()
-        Table = None
+    global TableFrame
+    if TableFrame:
+        TableFrame.destroy()
+        TableFrame = None
