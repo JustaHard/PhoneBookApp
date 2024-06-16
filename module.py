@@ -13,16 +13,16 @@ def show_main_window():
     root = create_window('Управление телефонным справочником', '400x300')
 
     # Создаем кнопку для отображения всего справочника
-    ShowAllButton = create_button(root, 'Отобразить весь справочник', show_all, pady=10)
+    create_button(root, 'Отобразить весь справочник', show_all, pady=10)
 
     # Создаем кнопку для экспорта данных из справочника
-    ExportDataButton = create_button(root, "Взаимодействие с сохраненными контактами", export_data, pady=10)
+    create_button(root, "Взаимодействие с сохраненными контактами", export_data, pady=10)
 
     # Создаем кнопку для импорта данных в справочник
-    ImportDataButton = create_button(root, 'Добавить новый контакт', import_data, pady=10)
+    create_button(root, 'Добавить новый контакт', import_data, pady=10)
 
     # Создаем кнопку завершения работы
-    CloseAppButton = create_button(root, 'Завершить работу', root.destroy, pady=10)
+    create_button(root, 'Завершить работу', root.destroy, pady=10)
 
     # Запуск главного цикла обработки событий
     root.mainloop()
@@ -32,36 +32,37 @@ def show_all():
 
     ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
 
-    try:
+    # try:
     # Получаем список сохраненных контактов
-        # Добавляем область для дополнительного взаимодействия с таблицей
-        InteractionFrame = tk.Frame(ShowAllWindow)
-        InteractionFrame.pack(pady=10, padx=10, side='top')
 
-        # Добавляем кнопку для сортировки по фамилии
-        SurnameSortButton = create_button(InteractionFrame, 'Сортировать по фамилии', surname_sort, padx=10, side='left')
+    # Добавляем область для дополнительного взаимодействия с таблицей
+    InteractionFrame = tk.Frame(ShowAllWindow)
+    InteractionFrame.pack(pady=10, padx=10, side='top')
 
-        # Доавляем кнопку для сортировки по имени
-        NameSortButton = create_button(InteractionFrame, 'Сортировать по имени', name_sort, padx=10, side='left')
+    # Добавляем кнопку для сортировки по фамилии
+    create_button(InteractionFrame, 'Сортировать по фамилии', surname_sort, padx=10, side='left')
 
-        # Добавляем поиск по номеру
-        SearchByNumberFrame, SearchByNumberLabel, SearchByNumberEntry = create_entry(InteractionFrame, 'Поиск по номеру:', 
-                                                                                     fside='right', lside='left', eside='left')
+    # Доавляем кнопку для сортировки по имени
+    create_button(InteractionFrame, 'Сортировать по имени', name_sort, padx=10, side='left')
 
-        SearchByNumberButton = create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
+    # Добавляем поиск по номеру
+    SearchByNumberFrame, SearchByNumberEntry = create_entry(InteractionFrame, 'Поиск по номеру:', 
+                                                                                    fside='right', lside='left', eside='left')
 
-        get_phone_book()
-        create_table()
+    create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
+    
+    PhoneBook = get_phone_book()
+    create_table(PhoneBook)
 
-        # Создаем кнопку для возврата таблицы в исходное состояние
-        UpdateTableButton = create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
+    # Создаем кнопку для возврата таблицы в исходное состояние
+    create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
 
-        # Создаем кнопку для возврата на главный экран
-        ShowMainWindowButton = create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
+    # Создаем кнопку для возврата на главный экран
+    create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
 
-    except:
-        NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
-        NoContactsLabel.pack(side='top')
+    # except:
+    #     NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
+    #     NoContactsLabel.pack(side='top')
 
     # Запуск цикла обработки событий
     ShowAllWindow.mainloop()
@@ -72,26 +73,26 @@ def import_data():
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
 
     # Создаем поле ввода фамилии
-    SurnameFrame, SurnameLabel, SurnameEntry = create_entry(ImportDataWindow, 'Введите фамилию: ', fpady=10, 
-                                                            fpadx=20, lside='left', eside='left')
+    SurnameEntry = create_entry(ImportDataWindow, 'Введите фамилию: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')[1]
 
     # Создаем поле ввода имени
-    NameFrame, NameLabel, NameEntry = create_entry(ImportDataWindow, 'Введите имя: ', fpady=10, 
-                                                            fpadx=20, lside='left', eside='left')
+    NameEntry = create_entry(ImportDataWindow, 'Введите имя: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')[1]
 
     # Создаем поле ввода номера телефона
-    PhoneNumberFrame, PhoneNumberLabel, PhoneNumberEntry = create_entry(ImportDataWindow, 'Введите номер телефона: ', fpady=10, 
-                                                            fpadx=20, lside='left', eside='left')
+    PhoneNumberEntry = create_entry(ImportDataWindow, 'Введите номер телефона: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')[1]
 
     # Создаем поле ввода комментария
-    CommentFrame, CommentLabel, CommentEntry = create_entry(ImportDataWindow, 'Введите комментарий: ', fpady=10, 
-                                                            fpadx=20, lside='left', eside='left')
+    CommentEntry = create_entry(ImportDataWindow, 'Введите комментарий: ', fpady=10, 
+                                                            fpadx=20, lside='left', eside='left')[1]
 
     # Создаем кнопку для сохранения данных
-    SaveDataButton = create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
+    create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
 
     # Создаем кнопку возврата в главное меню
-    BackToMainButton = create_button(ImportDataWindow, 'Назад', show_main_window, pady=10)
+    create_button(ImportDataWindow, 'Назад', show_main_window, pady=10)
 
     # Запуск цикла обработки событий
     ImportDataWindow.mainloop()
@@ -100,20 +101,18 @@ def export_data():
     return
 
 def save_data():
-    PhoneBook = []
-    DataToSave = [SurnameEntry.get(), NameEntry.get(), PhoneNumberEntry.get(), CommentEntry.get()]
     filepath = 'Saved_Data/Phone_book.txt'
+    DataToSave = [SurnameEntry.get(), NameEntry.get(), PhoneNumberEntry.get(), CommentEntry.get()]
 
     # Получаем список уже существующих контактов, если такие есть
     try:
-        with open (filepath, 'r') as phb:
-            for line in phb:
-                PhoneBook.append(line.split(','))
+        PhoneBook = get_phone_book()
     except:
         pass
 
     # Решаем проблему с кучей пустых строк
     for i in range(len(PhoneBook)):
+        PhoneBook[i] = list(PhoneBook[i])
         if '\n' in PhoneBook[i][-1]:
             PhoneBook[i][-1] = PhoneBook[i][-1].split('\n')
             PhoneBook[i][-1] = ''.join(element for element in PhoneBook[i][-1])
@@ -123,12 +122,12 @@ def save_data():
         PhoneBook.append(DataToSave)
 
     # Обновляем список контактов
-    with open (filepath, 'w') as phout:
+    with open (filepath, 'w', encoding='utf-8') as phout:
         for line in PhoneBook:
             s = ','.join(data for data in line)
             phout.write(f'{s}\n')
 
-def create_table():
+def create_table(PhoneBook):
     global TableFrame
 
     TableFrame = tk.Frame(ShowAllWindow)
@@ -153,30 +152,27 @@ def create_table():
     Table.pack()
 
 def surname_sort():
-    global PhoneBook
-
+    PhoneBook = get_phone_book()
     PhoneBook = sorted(PhoneBook, key=lambda x: x[0])
     delete_table()
-    create_table()
+    create_table(PhoneBook)
 
 def name_sort():
-    global PhoneBook
-
+    PhoneBook = get_phone_book()
     PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
     delete_table()
-    create_table()
+    create_table(PhoneBook)
 
 def search_by_number():
-    global PhoneBook
-
     LinesWithNumber = []
+    PhoneBook = get_phone_book()
     for line in PhoneBook:
         if SearchByNumberEntry.get() in line[2]:
             LinesWithNumber.append(line)
 
     PhoneBook = LinesWithNumber
     delete_table()
-    create_table()
+    create_table(PhoneBook)
 
 def delete_table():
     global TableFrame
@@ -185,19 +181,19 @@ def delete_table():
         TableFrame = None
 
 def get_phone_book():
-    global PhoneBook
-
     PhoneBook = []
     filepath = 'Saved_Data/Phone_book.txt'
 
-    with open (filepath, 'r') as phb:
+    with open (filepath, 'r', encoding='utf-8') as phb:
         for line in phb:
             PhoneBook.append(tuple(line.split(',')))
+        
+    return PhoneBook
 
 def update_table():
-    get_phone_book()
+    PhoneBook = get_phone_book()
     delete_table()
-    create_table()
+    create_table(PhoneBook)
 
 def create_window(title, geometry):
     global CurrentWindow
@@ -212,7 +208,6 @@ def create_window(title, geometry):
 def create_button(area, text, func, pady=None, padx=None, side=None):
     Button = tk.Button(area, text=text, command=func)
     Button.pack(pady=pady, padx=padx, side=side)
-    return Button
 
 def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady=None, fpadx=None):
     Frame = tk.Frame(area)
@@ -224,4 +219,4 @@ def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady
     Entry = tk.Entry(Frame, width=width)
     Entry.pack(side=eside)
 
-    return Frame, Label, Entry
+    return Frame, Entry
