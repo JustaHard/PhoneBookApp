@@ -57,6 +57,10 @@ def show_all():
 
         create_table()
 
+        # Создаем кнопку для возврата таблицы в исходное состояние
+        UpdateTableButton = tk.Button(ShowAllWindow, text='Вернуть таблицу к исходному состоянию', command=update_table)
+        UpdateTableButton.pack(pady=10)
+
     except:
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
         NoContactsLabel.pack(side='top')
@@ -118,7 +122,7 @@ def search_by_number():
     for line in PhoneBook:
         if SearchByNumberEntry.get() in line[2]:
             LinesWithNumber.append(line)
-            
+
     PhoneBook = LinesWithNumber
     delete_table()
     create_table()
