@@ -23,12 +23,7 @@ def show_all():
 
     try:
     # Получаем список сохраненных контактов
-        PhoneBook = []
-        filepath = 'Saved_Data/Phone_book.txt'
-
-        with open (filepath, 'r') as phb:
-            for line in phb:
-                PhoneBook.append(tuple(line.split(',')))
+        get_phone_book()
 
         # Добавляем область для дополнительного взаимодействия с таблицей
         InteractionFrame = tk.Frame(ShowAllWindow)
@@ -60,6 +55,10 @@ def show_all():
         # Создаем кнопку для возврата таблицы в исходное состояние
         UpdateTableButton = tk.Button(ShowAllWindow, text='Вернуть таблицу к исходному состоянию', command=update_table)
         UpdateTableButton.pack(pady=10)
+
+        # Создаем кнопку для возврата на главный экран
+        ShowMainWindowButton = tk.Button(ShowAllWindow, text='Назад', command=show_main_window)
+        ShowMainWindowButton.pack(pady=10)
 
     except:
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
@@ -132,3 +131,11 @@ def delete_table():
     if TableFrame:
         TableFrame.destroy()
         TableFrame = None
+
+def get_phone_book():
+    PhoneBook = []
+    filepath = 'Saved_Data/Phone_book.txt'
+
+    with open (filepath, 'r') as phb:
+        for line in phb:
+            PhoneBook.append(tuple(line.split(',')))
