@@ -9,23 +9,20 @@ def destroy_prev_window():
         CurrentWindow.destroy()
 
 def show_main_window():
+    # Создаем окно главного экрана
     root = create_window('Управление телефонным справочником', '400x300')
 
     # Создаем кнопку для отображения всего справочника
-    ShowAllButton = tk.Button(root, text='Отобразить весь справочник', command=show_all)
-    ShowAllButton.pack(pady=10)
+    ShowAllButton = create_button(root, 'Отобразить весь справочник', show_all, pady=10)
 
     # Создаем кнопку для экспорта данных из справочника
-    ExportDataButton = tk.Button(root, text='Взаимодействие с сохраненным контактом', command=export_data)
-    ExportDataButton.pack(pady=10)
+    ExportDataButton = create_button(root, "Взаимодействие с сохраненными контактами", export_data, pady=10)
 
     # Создаем кнопку для импорта данных в справочник
-    ImportDataButton = tk.Button(root, text='Добавить новый контакт', command=import_data)
-    ImportDataButton.pack(pady=10)
+    ImportDataButton = create_button(root, 'Добавить новый контакт', import_data, pady=10)
 
     # Создаем кнопку завершения работы
-    CloseAppButton = tk.Button(root, text='Завершить работу', command=root.destroy)
-    CloseAppButton.pack(pady=10)
+    CloseAppButton = create_button(root, 'Завершить работу', root.destroy, pady=10)
 
     # Запуск главного цикла обработки событий
     root.mainloop()
@@ -42,12 +39,10 @@ def show_all():
         InteractionFrame.pack(pady=10, padx=10, side='top')
 
         # Добавляем кнопку для сортировки по фамилии
-        SurnameSortButton = tk.Button(InteractionFrame, text='Сортировать по фамилии', command=surname_sort)
-        SurnameSortButton.pack(padx=10, side='left')
+        SurnameSortButton = create_button(InteractionFrame, 'Сортировать по фамилии', surname_sort, padx=10, side='left')
 
         # Доавляем кнопку для сортировки по имени
-        NameSortButton = tk.Button(InteractionFrame, text='Сортировать по имени', command=name_sort)
-        NameSortButton.pack(padx=10, side='left')
+        NameSortButton = create_button(InteractionFrame, 'Сортировать по имени', name_sort, padx=10, side='left')
 
         # Добавляем поиск по номеру
         SearchByNumberFrame = tk.Frame(InteractionFrame)
@@ -59,19 +54,16 @@ def show_all():
         SearchByNumberEntry = tk.Entry(SearchByNumberFrame, width=30)
         SearchByNumberEntry.pack(side='left')
 
-        SearchByNumberButton = tk.Button(SearchByNumberFrame, text='Поиск', command=search_by_number)
-        SearchByNumberButton.pack(side='left')
+        SearchByNumberButton = create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
 
         get_phone_book()
         create_table()
 
         # Создаем кнопку для возврата таблицы в исходное состояние
-        UpdateTableButton = tk.Button(ShowAllWindow, text='Вернуть таблицу к исходному состоянию', command=update_table)
-        UpdateTableButton.pack(pady=10, side='bottom')
+        UpdateTableButton = create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
 
         # Создаем кнопку для возврата на главный экран
-        ShowMainWindowButton = tk.Button(ShowAllWindow, text='Назад', command=show_main_window)
-        ShowMainWindowButton.pack(pady=10, side='bottom')
+        ShowMainWindowButton = create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
 
     except:
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
@@ -126,12 +118,10 @@ def import_data():
     CommentEntry.pack(side="left")
 
     # Создаем кнопку для сохранения данных
-    SaveDataButton = tk.Button(ImportDataWindow, text='Сохранить данные', command=save_data)
-    SaveDataButton.pack(pady=10)
+    SaveDataButton = create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
 
     # Создаем кнопку возврата в главное меню
-    BackToMainButton = tk.Button(ImportDataWindow, text='Назад', command=show_main_window)
-    BackToMainButton.pack(pady=10)
+    BackToMainButton = create_button(ImportDataWindow, 'Назад', show_main_window, pady=10)
 
     # Запуск цикла обработки событий
     ImportDataWindow.mainloop()
@@ -248,3 +238,8 @@ def create_window(title, geometry):
     name.geometry(geometry)
     CurrentWindow = name
     return name
+
+def create_button(area, text, func, pady=None, padx=None, side=None):
+    Button = tk.Button(area, text=text, command=func)
+    Button.pack(pady=pady, padx=padx, side=side)
+    return Button
