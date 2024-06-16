@@ -12,14 +12,12 @@ def show_all():
     return
 
 def import_data():
-    global CurrentWindow
+    global CurrentWindow, SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry
     
     # Закрываем предыдущее окно
     destroy_prev_window()
 
     # Создаем вспомогательное окно для ввода данных о новом контакте
-    global SurnameEntry, NameEntry, PhoneNumberEntry, CommentEntry
-
     ImportDataWindow = tk.Tk()    
     ImportDataWindow.title("Введите данные о новом контакте")
     ImportDataWindow.geometry("400x300")
