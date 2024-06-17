@@ -26,18 +26,22 @@ def show_all(get_iterables=False):
         TableFrame = tk.Frame(ShowAllWindow)
         TableFrame.pack(pady=10, padx=10, side='top')
 
-        cols = tuple(i for i in range(len(headings)))
-        cols_sizes = (100, 100, 120, 130)
+        cols = tuple(i for i in range(len(PhoneBook)))
+        cols_sizes = (30, 100, 100, 120, 130)
         Table = ttk.Treeview(TableFrame, columns=cols, show='headings', height=12)
         
-        for i in range(len(headings)):
-            Table.heading(cols[i], text=headings[i])
+        for i in range(len(PhoneBook)):
+            Table.heading(cols[i], text=list(PhoneBook.keys())[i])
 
-        for i in range(len(headings)):
+        for i in range(len(PhoneBook)):
             Table.column(i, width=cols_sizes[i])
 
-        for line in PhoneBook:
-            Table.insert('', tk.END, values=line)
+        for i in range(len(list(PhoneBook.values())[0])):
+            for key in PhoneBook.keys():
+                if key == '№':
+                    data_list = []
+                data_list.append(PhoneBook[key][i])
+            Table.insert('', tk.END, values=data_list)
 
         Table.pack()
 
