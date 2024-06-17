@@ -19,7 +19,7 @@ def show_main_window():
     # Запуск главного цикла обработки событий
     root.mainloop()
 
-def show_all(get_iterables=False):
+def show_all():
     def create_table(PhoneBook):
         global TableFrame
 
@@ -82,12 +82,30 @@ def show_all(get_iterables=False):
         create_table(PhoneBook)
 
     def change_data():
-        IndexToChange = IndexToChangeEntry.get()
-        if IndexToChange:
+        def save_changes():
+            for i in range(len(PhoneBook)):
+                PhoneBook[list(PhoneBook.keys())[i]][IndexToChange] = EntriesToChange[i].get()
+
+            update_data(PhoneBook)
+            show_all()
+
+        
+        if IndexToChangeEntry.get():
+            IndexToChange = int(IndexToChangeEntry.get())
             ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
-            headings = ('Индекс', 'Фамилия', 'Имя', 'Номер телефона', 'Комментарий')
             PhoneBook = get_phone_book()
+            PhoneBook.pop('№')
+
+            EntriesToChange = []
+            for key in PhoneBook.keys():
+                entry = create_entry(ChangeDataWindow, key, fpady=10)[1]
+                entry.insert(0, PhoneBook[key][IndexToChange])
+                EntriesToChange.append(entry)
+
+            create_button(ChangeDataWindow, 'Сохранить', save_changes)
+            create_button(ChangeDataWindow, 'Отменить', show_all, pady=10)
             
+
 
     ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
 
@@ -114,16 +132,16 @@ def show_all(get_iterables=False):
         # Строим таблицу
         create_table(PhoneBook)
 
-        # Создаем кнопку для возврата таблицы в исходное состояние
-        create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
-
         # Создаем кнопку для возврата на главный экран
         create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
 
+        # Создаем кнопку для возврата таблицы в исходное состояние
+        create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
+
         # Создаем поле для выбора контакта для редактирования
-        IndexToChangeFrame, IndexToChangeEntry = create_entry(ShowAllWindow, 'Введите индекс контакта, который хотите отредактиовать', 
-                                                              fside='top')
-        create_button(IndexToChangeFrame, 'Выбрать', change_data)
+        IndexToChangeFrame, IndexToChangeEntry = create_entry(ShowAllWindow, 'Введите индекс контакта, который хотите отредактиовать',
+                                                              fside='bottom')
+        create_button(IndexToChangeFrame, 'Выбрать', change_data, pady=5)
 
     else:
         # Если контактов не обнаружено, сообщаем об этом
@@ -148,10 +166,7 @@ def import_data():
             PhoneBook.append(DataToSave)
 
         # Обновляем список контактов
-        with open(filepath, 'w', encoding='utf-8') as phb:
-            for line in PhoneBook:
-                s = ','.join(str(data) for data in line)
-                phb.write(f'{s}\n')
+        update_data(PhoneBook)
     
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
 
@@ -256,3 +271,14 @@ def list_to_dict(List):
             Dict[list(Dict.keys())[j]].append(List[i][j])
 
     return Dict
+
+def update_data(PhoneBook):
+    filepath = 'Saved_Data/Phone_book.txt'
+
+    if type(PhoneBook) == dict:
+        PhoneBook = dict_to_list(PhoneBook)
+
+    with open(filepath, 'w', encoding='utf-8') as phb:
+            for line in PhoneBook:
+                s = ','.join(str(data) for data in line)
+                phb.write(f'{s}\n')
