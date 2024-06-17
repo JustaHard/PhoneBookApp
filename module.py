@@ -58,16 +58,18 @@ def show_all(get_iterables=False):
         create_table(PhoneBook)
 
     def search_by_number():
-        LinesWithNumber = []
+        LinesWithNumber = {'№':[], 'Фамилия':[], 'Имя':[], 
+                           'Номер телефона':[], 'Комментарий':[]}
+        
         PhoneBook = get_phone_book()
-        for line in PhoneBook:
-            if SearchByNumberEntry.get() in line[2]:
-                LinesWithNumber.append(line)
+        for i in range(len(list(PhoneBook.values())[0])):
+            if SearchByNumberEntry.get() in PhoneBook["Номер телефона"][i]:
+                for key in PhoneBook.keys():
+                    LinesWithNumber[key].append(PhoneBook[key][i])
                 
-        PhoneBook = LinesWithNumber
         TableFrame.destroy()
-        create_table(PhoneBook)
-        return PhoneBook
+        create_table(LinesWithNumber)
+        return LinesWithNumber
 
     def update_table():
         PhoneBook = get_phone_book()
@@ -129,9 +131,10 @@ def show_all(get_iterables=False):
 def import_data():
     def save_data():
         filepath = 'Saved_Data/Phone_book.txt'
-        DataToSave = [SurnameEntry.get(), NameEntry.get(), PhoneNumberEntry.get(), CommentEntry.get()]
+        DataToSave = [SurnameEntry.get(), NameEntry.get(), 
+                      PhoneNumberEntry.get(), CommentEntry.get()]
 
-        # Получаем список уже существующих контактов, если такие есть
+        # Получаем список уже существующих контактов
         PhoneBook = get_phone_book()
 
         # Заносим новый контакт в список, если до этого его там не было
