@@ -55,7 +55,9 @@ def show_all(get_iterables=False):
 
     def name_sort():
         PhoneBook = search_by_number()
-        PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
+        PhoneBook = dict_to_list(PhoneBook)
+        PhoneBook = sorted(PhoneBook, key=lambda x: x[2])
+        PhoneBook = list_to_dict(PhoneBook)
         TableFrame.destroy()
         create_table(PhoneBook)
 
