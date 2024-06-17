@@ -140,6 +140,8 @@ def import_data():
 
         # Получаем список уже существующих контактов
         PhoneBook = get_phone_book()
+        PhoneBook.pop('№')
+        PhoneBook = dict_to_list(PhoneBook)
 
         # Заносим новый контакт в список, если до этого его там не было
         if DataToSave not in PhoneBook:
@@ -148,7 +150,7 @@ def import_data():
         # Обновляем список контактов
         with open(filepath, 'w', encoding='utf-8') as phb:
             for line in PhoneBook:
-                s = ','.join(data for data in line)
+                s = ','.join(str(data) for data in line)
                 phb.write(f'{s}\n')
     
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
