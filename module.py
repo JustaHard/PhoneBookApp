@@ -45,13 +45,13 @@ def show_all(get_iterables=False):
     def surname_sort():
         PhoneBook = search_by_number()
         PhoneBook = sorted(PhoneBook, key=lambda x: x[0])
-        delete_table()
+        TableFrame.destroy()
         create_table(PhoneBook)
 
     def name_sort():
         PhoneBook = search_by_number()
         PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
-        delete_table()
+        TableFrame.destroy()
         create_table(PhoneBook)
 
     def search_by_number():
@@ -62,19 +62,24 @@ def show_all(get_iterables=False):
                 LinesWithNumber.append(line)
                 
         PhoneBook = LinesWithNumber
-        delete_table()
+        TableFrame.destroy()
         create_table(PhoneBook)
         return PhoneBook
 
     def update_table():
         PhoneBook = get_phone_book()
         SearchByNumberEntry.delete(0,tk.END)
-        delete_table()
+        TableFrame.destroy()
         create_table(PhoneBook)
 
-    def delete_table():
-        TableFrame.destroy()
-        
+    def change_data():
+        IndexToChange = IndexToChangeEntry.get()
+        if IndexToChange:
+            ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
+            headings = ('Индекс', 'Фамилия', 'Имя', 'Номер телефона', 'Комментарий')
+            PhoneBook = get_phone_book()
+            
+
     ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
 
     # Получаем список сохраненных контактов
@@ -93,7 +98,7 @@ def show_all(get_iterables=False):
 
         # Добавляем поиск по номеру
         SearchByNumberFrame, SearchByNumberEntry = create_entry(InteractionFrame, 'Поиск по номеру:', 
-                                                                                        fside='right', lside='left', eside='left')
+                                                                fside='right', lside='left', eside='left')
 
         create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
         
@@ -105,6 +110,11 @@ def show_all(get_iterables=False):
 
         # Создаем кнопку для возврата на главный экран
         create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
+
+        # Создаем поле для выбора контакта для редактирования
+        IndexToChangeFrame, IndexToChangeEntry = create_entry(ShowAllWindow, 'Введите индекс контакта, который хотите отредактиовать', 
+                                                              fside='top')
+        create_button(IndexToChangeFrame, 'Выбрать', change_data)
 
     else:
         # Если контактов не обнаружено, сообщаем об этом
@@ -192,6 +202,8 @@ def create_window(title, geometry):
 def create_button(area, text, func, pady=None, padx=None, side=None):
     Button = tk.Button(area, text=text, command=func)
     Button.pack(pady=pady, padx=padx, side=side)
+
+    return Button
 
 def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady=None, fpadx=None):
     # Создаем область, в которой будут располагаться поле ввода и его пояснение
