@@ -26,7 +26,6 @@ def show_all(get_iterables=False):
         TableFrame = tk.Frame(ShowAllWindow)
         TableFrame.pack(pady=10, padx=10, side='top')
 
-        headings = ('Фамилия', 'Имя', 'Номер телефона', 'Комментарий')
         cols = tuple(i for i in range(len(headings)))
         cols_sizes = (100, 100, 120, 130)
         Table = ttk.Treeview(TableFrame, columns=cols, show='headings', height=12)
@@ -131,13 +130,6 @@ def import_data():
         # Получаем список уже существующих контактов, если такие есть
         PhoneBook = get_phone_book()
 
-        # Решаем проблему с кучей пустых строк
-        for i in range(len(PhoneBook)):
-            PhoneBook[i] = list(PhoneBook[i])
-            if '\n' in PhoneBook[i][-1]:
-                PhoneBook[i][-1] = PhoneBook[i][-1].split('\n')
-                PhoneBook[i][-1] = ''.join(element for element in PhoneBook[i][-1])
-
         # Заносим новый контакт в список, если до этого его там не было
         if DataToSave not in PhoneBook:
             PhoneBook.append(DataToSave)
@@ -176,12 +168,31 @@ def import_data():
     ImportDataWindow.mainloop()
 
 def get_phone_book():
-    PhoneBook = []
+    data = []
     filepath = 'Saved_Data/Phone_book.txt'
+    headings = ['№', 'Фамилия', 'Имя', 'Номер телефона', 'Комментарий']
 
+    # Получаем данные о существующих контактах
     with open(filepath, 'r', encoding='utf-8') as phb:
         for line in phb:
-            PhoneBook.append(tuple(line.split(',')))
+            data.append(line.split(','))
+
+    # Убираем переходы на другую строку
+    for i in range(len(data)):
+        data[i] = list(data[i])
+        if '\n' in data[i][-1]:
+            data[i][-1] = data[i][-1].split('\n')
+            data[i][-1] = ''.join(element for element in data[i][-1])
+
+    # Добавляем индексы
+    for i in range(len(data)):
+        data[i].insert(0, i)
+
+    # Формируем словарь со всеми данными
+    PhoneBook = {'№':[], 'Фамилия':[], 'Имя':[], 'Номер телефона':[], 'Комментарий':[]}
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            PhoneBook[headings[j]].append(data[i][j])
         
     return PhoneBook
 
