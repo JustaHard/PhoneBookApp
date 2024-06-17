@@ -47,7 +47,9 @@ def show_all(get_iterables=False):
 
     def surname_sort():
         PhoneBook = search_by_number()
-        PhoneBook = sorted(PhoneBook, key=lambda x: x[0])
+        PhoneBook = dict_to_list(PhoneBook)
+        PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
+        PhoneBook = list_to_dict(PhoneBook)
         TableFrame.destroy()
         create_table(PhoneBook)
 
@@ -177,7 +179,6 @@ def import_data():
 def get_phone_book():
     data = []
     filepath = 'Saved_Data/Phone_book.txt'
-    headings = ['№', 'Фамилия', 'Имя', 'Номер телефона', 'Комментарий']
 
     # Получаем данные о существующих контактах
     with open(filepath, 'r', encoding='utf-8') as phb:
@@ -196,10 +197,7 @@ def get_phone_book():
         data[i].insert(0, i)
 
     # Формируем словарь со всеми данными
-    PhoneBook = {'№':[], 'Фамилия':[], 'Имя':[], 'Номер телефона':[], 'Комментарий':[]}
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-            PhoneBook[headings[j]].append(data[i][j])
+    PhoneBook = list_to_dict(data)
         
     return PhoneBook
 
@@ -237,3 +235,20 @@ def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady
     Entry.pack(side=eside)
 
     return Frame, Entry
+
+def dict_to_list(Dict):
+    List = []
+    for i in range(len(list(Dict.values())[0])):
+        List.append(list())
+        for key in Dict.keys():
+            List[i].append(Dict[key][i])
+
+    return List
+
+def list_to_dict(List):
+    Dict = {'№':[], 'Фамилия':[], 'Имя':[], 'Номер телефона':[], 'Комментарий':[]}
+    for i in range(len(List)):
+        for j in range(len(List[i])):
+            Dict[list(Dict.keys())[j]].append(List[i][j])
+
+    return Dict
