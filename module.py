@@ -43,13 +43,13 @@ def show_all(get_iterables=False):
         Table.pack()
 
     def surname_sort():
-        PhoneBook = get_phone_book()
+        PhoneBook = search_by_number()
         PhoneBook = sorted(PhoneBook, key=lambda x: x[0])
         delete_table()
         create_table(PhoneBook)
 
     def name_sort():
-        PhoneBook = get_phone_book()
+        PhoneBook = search_by_number()
         PhoneBook = sorted(PhoneBook, key=lambda x: x[1])
         delete_table()
         create_table(PhoneBook)
@@ -64,9 +64,11 @@ def show_all(get_iterables=False):
         PhoneBook = LinesWithNumber
         delete_table()
         create_table(PhoneBook)
+        return PhoneBook
 
     def update_table():
         PhoneBook = get_phone_book()
+        SearchByNumberEntry.delete(0,tk.END)
         delete_table()
         create_table(PhoneBook)
 
