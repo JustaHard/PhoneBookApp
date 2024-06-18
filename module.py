@@ -16,7 +16,10 @@ def show_main_window():
     create_button(root, 'Отобразить весь справочник', show_all, pady=10)
 
     # Создаем кнопку для импорта данных в справочник
-    create_button(root, 'Добавить новый контакт', import_data, pady=10)
+    create_button(root, 'Добавить новый контакт', create_new_contact, pady=10)
+
+    # Создаем кнопку для клонирования данных из другого файла
+    create_button(root, 'Импортировать данные из другого файла', import_data, pady=10)
 
     # Создаем кнопку завершения работы
     create_button(root, 'Завершить работу', root.destroy, pady=10)
@@ -273,9 +276,7 @@ def show_all():
         # Создаем кнопку для возврата на главный экран
         create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
 
-    ShowAllWindow.mainloop()
-
-def import_data():
+def create_new_contact():
     """
     Сохранение нового контакта
     """
@@ -304,7 +305,7 @@ def import_data():
 
             # Обновляем список контактов
             update_data(PhoneBook)
-            import_data()
+            create_new_contact()
 
         else:
             # Создаем окно, чтобы сообщить пользователю, что контакт уже существует
@@ -316,23 +317,125 @@ def import_data():
             ContactAlreadyExistsLabel.pack(pady=10)
 
             # Создаем кнопку для возврата к окну введения данных о новом контакте
-            create_button(ContactAlreadyExistsWindow, 'Назад', import_data, pady=10)
+            create_button(ContactAlreadyExistsWindow, 'Назад', create_new_contact, pady=10)
 
     # Создаем окно для создания нового контакта
-    ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
+    CreateNewContactWindow = create_window('Введите данные о новом контакте', '400x300')
     
     # Создаем поля ввода для указания данных о новом контакте
     Entries = []
     for i in ['Фамилия', 'Имя', 'Номер телефона', 'Комментарий']:
-        entry = create_entry(ImportDataWindow, i, fpady=10, fpadx=20, lside='left', 
+        entry = create_entry(CreateNewContactWindow, i, fpady=10, fpadx=20, lside='left', 
                              eside='left')[1]
         Entries.append(entry)
 
     # Создаем кнопку для сохранения данных
-    create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
+    create_button(CreateNewContactWindow, 'Сохранить данные', save_data, pady=10)
 
     # Создаем кнопку возврата в главное меню
-    create_button(ImportDataWindow, 'Назад', show_main_window, pady=10)
+    create_button(CreateNewContactWindow, 'Назад', show_main_window, pady=10)
+
+def import_data():
+    """
+    Импорт данных из стороннего файла
+    """
+
+    def choose_lines():
+        """
+        Выбор линий, которые надо импортировать из файла
+        """
+
+        def import_from_file():
+            """
+            Получаем данные из файла и сохраняем в базу данных
+            """
+
+            # Проверяем, что поле для ввода не пустое
+            if ChooseLinesEntry.get():
+                # Преобразуем введенные данные в массив
+                LinesToImport = list(set(ChooseLinesEntry.get().replace(' ', '').split(',')))
+
+                # Получаем список сохраненных контактов
+                PhoneBook = get_phone_book()
+
+                # Получаем информацию из указанного файла
+                FileData = get_phone_book(filepath=FilePath)
+
+                # Импортируем строки, которые можно импортировать
+                BadLines = {'Line':[], 'Reason':[]}
+                for i in range(len(LinesToImport)):
+                    try:
+                        if int(LinesToImport[i]) in FileData['№']:
+                            for key in PhoneBook.keys():
+                                PhoneBook[key].append(FileData[key][int(LinesToImport[i])])
+                        else:
+                            BadLines['Line'].append(LinesToImport[i])
+                            BadLines['Reason'].append('Строка не найдена')
+                    except ValueError:
+                        BadLines['Line'].append(LinesToImport[i])
+                        BadLines['Reason'].append('Неверный тип данных')
+
+                # Обновляем данные
+                update_data(PhoneBook.pop('№'))
+
+                # Если не все указанные линии получилось импортировать, сообщаем об этом
+                if BadLines:
+                    # Создаем окно
+                    BadLinesWindow = create_window('Не все линии получилось импортировать')
+                    
+                    # Выводим сообщение
+                    BadLinesLabel = tk.Label(BadLinesWindow, 
+                                        text=f'Не удалось импортировать линии {BadLines}')
+                    BadLinesLabel.pack(pady=10)
+
+                    # Создаем кнопку возврата
+                    create_button(BadLinesWindow, 'Назад', import_data, pady=10)
+
+                else:
+                    import_data()
+
+        # Проверяем, что поле для ввода не пустое
+        if GetFilePathEntry.get():
+            FilePath = GetFilePathEntry.get()
+
+            # Проверяем, существует ли указанный файл
+            if os.path.exists(FilePath):
+                # Создаем окно
+                ChooseLinesWindow = create_window('Импорт данных из другого файла',
+                                                  '300x200')
+                
+                # Создаем поле ввода
+                ChooseLinesFrame, ChooseLinesEntry = create_entry(ChooseLinesWindow,
+                        'Укажите линии, которые хотите импортировать', 
+                        fpady=10)
+                create_button(ChooseLinesFrame, 'Выбор', import_from_file, pady=10)
+
+                # Создаем кнопку для возврата
+                create_button(ChooseLinesWindow, 'Назад', import_data, pady=10)
+
+            else:
+                # Создаем окно
+                FileNotFoundWindow = create_window('Ошибка', '300x100')
+
+                # Выводим сообщение
+                FileNotFoundLabel = tk.Label(FileNotFoundWindow, 
+                                             text='Указанный файл не найден')
+                FileNotFoundLabel.pack(pady=10)
+
+                # Создаем кнопку для возврата
+                create_button(FileNotFoundWindow, 'Назад', import_data, pady=10)
+
+    # Создаем окно
+    ImportDataWindow = create_window('Импорт данных из другого файла', '400x150')
+    
+    # Создаем поле ввода для указания пути стороннего файла
+    GetFilePathFrame, GetFilePathEntry = create_entry(ImportDataWindow, 
+                            'Укажите путь к файлу, из которого хотите импортировать данные', 
+                            fpady=10)
+    create_button(GetFilePathFrame, 'Ввод', choose_lines, pady=10)
+
+    # Создаем кнопку для возврата на главный экран
+    create_button(ImportDataWindow, 'Назад', show_main_window)
 
 def get_phone_book(filepath='Saved_Data/Phone_book.txt'):
     """
@@ -397,6 +500,7 @@ def create_window(title, geometry):
     Создаем новое окно и удаляем предыдущее
 
     title(str) - Заголовок окна
+
     geometry('WIDTHxHEIGHT') - Размер окна в пикселях
     """
 
