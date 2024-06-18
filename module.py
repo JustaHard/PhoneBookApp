@@ -16,33 +16,36 @@ def show_main_window():
     # Создаем кнопку завершения работы
     create_button(root, 'Завершить работу', root.destroy, pady=10)
 
-    # Запуск главного цикла обработки событий
+    # Запускаем цикл обработки событий
     root.mainloop()
 
 def show_all():
-    def create_table(PhoneBook):
+    def create_table(data):
         global TableFrame
 
+        # Создаем область, в которой располагается таблица
         TableFrame = tk.Frame(ShowAllWindow)
         TableFrame.pack(pady=10, padx=10, side='top')
 
-        cols = tuple(i for i in range(len(PhoneBook)))
+        # Задаем параметры таблицы
+        cols = tuple(i for i in range(len(data)))
         cols_sizes = (30, 100, 100, 120, 130)
         Table = ttk.Treeview(TableFrame, columns=cols, show='headings', height=12)
         
-        for i in range(len(PhoneBook)):
-            Table.heading(cols[i], text=list(PhoneBook.keys())[i])
+        for i in range(len(data)):
+            Table.heading(cols[i], text=list(data.keys())[i])
 
-        for i in range(len(PhoneBook)):
+        for i in range(len(data)):
             Table.column(i, width=cols_sizes[i])
 
-        for i in range(len(list(PhoneBook.values())[0])):
-            for key in PhoneBook.keys():
+        for i in range(len(list(data.values())[0])):
+            for key in data.keys():
                 if key == '№':
-                    data_list = []
-                data_list.append(PhoneBook[key][i])
-            Table.insert('', tk.END, values=data_list)
+                    Line = []
+                Line.append(data[key][i])
+            Table.insert('', tk.END, values=Line)
 
+        # Выводим таблицу в окно
         Table.pack()
 
     def surname_sort():
@@ -62,15 +65,18 @@ def show_all():
         create_table(PhoneBook)
 
     def search_by_number():
+        # Указываем переменную, в которую будем сохранять подходящие контакты
         LinesWithNumber = {'№':[], 'Фамилия':[], 'Имя':[], 
                            'Номер телефона':[], 'Комментарий':[]}
         
+        # Ищем контакты с указанным номером
         PhoneBook = get_phone_book()
         for i in range(len(list(PhoneBook.values())[0])):
             if SearchByNumberEntry.get() in PhoneBook["Номер телефона"][i]:
                 for key in PhoneBook.keys():
                     LinesWithNumber[key].append(PhoneBook[key][i])
                 
+        # Меняем таблицу на измененную
         TableFrame.destroy()
         create_table(LinesWithNumber)
         return LinesWithNumber
@@ -83,26 +89,33 @@ def show_all():
 
     def change_data():
         def save_changes():
+            # Вносим изменения в список контактов
             for i in range(len(PhoneBook)):
                 PhoneBook[list(PhoneBook.keys())[i]][IndexToChange] = EntriesToChange[i].get()
 
+            # Сохраняем изменения в файл и возвращаемся к списку контактов
             update_data(PhoneBook)
             show_all()
 
         def delete_data():
+            # Удаляем контакт из списка
             for i in range(len(PhoneBook)):
                 PhoneBook[list(PhoneBook.keys())[i]].pop(IndexToChange)
 
+            # Сохраняем изменения в файл и возвращаемся к списку контактов
             update_data(PhoneBook)
             show_all()
         
         if IndexToChangeEntry.get():
+            # Создаем новое окно для редактирования контакта
             IndexToChange = int(IndexToChangeEntry.get())
             ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
             PhoneBook = get_phone_book()
 
+            # Создаем кнопку для удаления контакта
             create_button(ChangeDataWindow, 'Удалить контакт', delete_data, pady=10)
 
+            # Даем пользователю возможность изменить данные о контакте
             PhoneBook.pop('№')
             EntriesToChange = []
             for key in PhoneBook.keys():
@@ -110,11 +123,11 @@ def show_all():
                 entry.insert(0, PhoneBook[key][IndexToChange])
                 EntriesToChange.append(entry)
 
+            # Создаем кнопки для сохранения и отмены изменений
             create_button(ChangeDataWindow, 'Сохранить', save_changes)
             create_button(ChangeDataWindow, 'Отменить', show_all, pady=10)
             
-
-
+    # Создаем окно для вывода списка сохраненных контактов
     ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
 
     # Получаем список сохраненных контактов
@@ -126,15 +139,18 @@ def show_all():
         InteractionFrame.pack(pady=10, padx=10, side='top')
 
         # Добавляем кнопку для сортировки по фамилии
-        create_button(InteractionFrame, 'Сортировать по фамилии', surname_sort, padx=10, side='left')
+        create_button(InteractionFrame, 'Сортировать по фамилии', 
+                      surname_sort, padx=10, side='left')
 
         # Доавляем кнопку для сортировки по имени
-        create_button(InteractionFrame, 'Сортировать по имени', name_sort, padx=10, side='left')
+        create_button(InteractionFrame, 'Сортировать по имени', 
+                      name_sort, padx=10, side='left')
 
         # Добавляем поиск по номеру
-        SearchByNumberFrame, SearchByNumberEntry = create_entry(InteractionFrame, 'Поиск по номеру:', 
-                                                                fside='right', lside='left', eside='left')
-
+        SearchByNumberFrame, SearchByNumberEntry = create_entry(InteractionFrame, 
+                                                                'Поиск по номеру:', 
+                                                                fside='right', lside='left', 
+                                                                eside='left')
         create_button(SearchByNumberFrame, 'Поиск', search_by_number, side='left')
         
         # Строим таблицу
@@ -144,11 +160,12 @@ def show_all():
         create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
 
         # Создаем кнопку для возврата таблицы в исходное состояние
-        create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', update_table, pady=10, side='bottom')
+        create_button(ShowAllWindow, 'Вернуть таблицу к исходному состоянию', 
+                      update_table, pady=10, side='bottom')
 
         # Создаем поле для выбора контакта для редактирования
-        IndexToChangeFrame, IndexToChangeEntry = create_entry(ShowAllWindow, 'Введите индекс контакта, который хотите отредактиовать',
-                                                              fside='bottom')
+        IndexToChangeFrame, IndexToChangeEntry = create_entry(ShowAllWindow, 
+            'Введите индекс контакта, который хотите отредактиовать', fside='bottom')
         create_button(IndexToChangeFrame, 'Выбрать', change_data, pady=5)
 
     else:
@@ -156,18 +173,12 @@ def show_all():
         NoContactsLabel = tk.Label(ShowAllWindow, text='Нет сохраненных контактов')
         NoContactsLabel.pack(side='top')
 
-    ShowAllWindow.mainloop()
-
 def import_data():
     def save_data():
-        filepath = 'Saved_Data/Phone_book.txt'
-        DataToSave = [SurnameEntry.get(), NameEntry.get(), 
-                      PhoneNumberEntry.get(), CommentEntry.get()]
-
-        # Получаем список уже существующих контактов
         PhoneBook = get_phone_book()
         PhoneBook.pop('№')
         PhoneBook = dict_to_list(PhoneBook)
+        DataToSave = [data.get() for data in Entries]
 
         # Заносим новый контакт в список, если до этого его там не было
         if DataToSave not in PhoneBook:
@@ -175,33 +186,22 @@ def import_data():
 
         # Обновляем список контактов
         update_data(PhoneBook)
-    
+        import_data()
+
+    # Создаем окно для создания нового контакта
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
-
-    # Создаем поле ввода фамилии
-    SurnameEntry = create_entry(ImportDataWindow, 'Введите фамилию: ', fpady=10, 
-                                fpadx=20, lside='left', eside='left')[1]
-
-    # Создаем поле ввода имени
-    NameEntry = create_entry(ImportDataWindow, 'Введите имя: ', fpady=10, 
-                             fpadx=20, lside='left', eside='left')[1]
-
-    # Создаем поле ввода номера телефона
-    PhoneNumberEntry = create_entry(ImportDataWindow, 'Введите номер телефона: ', fpady=10, 
-                                    fpadx=20, lside='left', eside='left')[1]
-
-    # Создаем поле ввода комментария
-    CommentEntry = create_entry(ImportDataWindow, 'Введите комментарий: ', fpady=10, 
-                                fpadx=20, lside='left', eside='left')[1]
+    
+    Entries = []
+    for i in ['Фамилия', 'Имя', 'Номер телефона', 'Комментарий']:
+        entry = create_entry(ImportDataWindow, i, fpady=10, fpadx=20, lside='left', 
+                             eside='left')[1]
+        Entries.append(entry)
 
     # Создаем кнопку для сохранения данных
     create_button(ImportDataWindow, 'Сохранить данные', save_data, pady=10)
 
     # Создаем кнопку возврата в главное меню
     create_button(ImportDataWindow, 'Назад', show_main_window, pady=10)
-
-    # Запуск цикла обработки событий
-    ImportDataWindow.mainloop()
 
 def get_phone_book():
     data = []
@@ -236,11 +236,11 @@ def create_window(title, geometry):
             CurrentWindow.destroy()
 
     destroy_prev_window()
-    name = tk.Tk()
-    name.title(title)
-    name.geometry(geometry)
-    CurrentWindow = name
-    return name
+    window = tk.Tk()
+    window.title(title)
+    window.geometry(geometry)
+    CurrentWindow = window
+    return window
 
 def create_button(area, text, func, pady=None, padx=None, side=None):
     Button = tk.Button(area, text=text, command=func)
@@ -248,7 +248,8 @@ def create_button(area, text, func, pady=None, padx=None, side=None):
 
     return Button
 
-def create_entry(area, text, width=30, fside=None, lside=None, eside=None, fpady=None, fpadx=None):
+def create_entry(area, text, width=30, fside=None, lside=None, eside=None, 
+                 fpady=None, fpadx=None):
     # Создаем область, в которой будут располагаться поле ввода и его пояснение
     Frame = tk.Frame(area)
     Frame.pack(side=fside, padx=fpadx, pady=fpady)
@@ -280,13 +281,13 @@ def list_to_dict(List):
 
     return Dict
 
-def update_data(PhoneBook):
+def update_data(data):
     filepath = 'Saved_Data/Phone_book.txt'
 
-    if type(PhoneBook) == dict:
-        PhoneBook = dict_to_list(PhoneBook)
+    if type(data) == dict:
+        data = dict_to_list(data)
 
     with open(filepath, 'w', encoding='utf-8') as phb:
-            for line in PhoneBook:
+            for line in data:
                 s = ','.join(str(data) for data in line)
                 phb.write(f'{s}\n')
