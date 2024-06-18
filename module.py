@@ -89,13 +89,21 @@ def show_all():
             update_data(PhoneBook)
             show_all()
 
+        def delete_data():
+            for i in range(len(PhoneBook)):
+                PhoneBook[list(PhoneBook.keys())[i]].pop(IndexToChange)
+
+            update_data(PhoneBook)
+            show_all()
         
         if IndexToChangeEntry.get():
             IndexToChange = int(IndexToChangeEntry.get())
             ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
             PhoneBook = get_phone_book()
-            PhoneBook.pop('№')
 
+            create_button(ChangeDataWindow, 'Удалить контакт', delete_data, pady=10)
+
+            PhoneBook.pop('№')
             EntriesToChange = []
             for key in PhoneBook.keys():
                 entry = create_entry(ChangeDataWindow, key, fpady=10)[1]
