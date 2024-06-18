@@ -107,25 +107,33 @@ def show_all():
             show_all()
         
         if IndexToChangeEntry.get():
-            # Создаем новое окно для редактирования контакта
             IndexToChange = int(IndexToChangeEntry.get())
-            ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
             PhoneBook = get_phone_book()
+            if IndexToChange in PhoneBook['№']:
+                # Создаем новое окно для редактирования контакта
+                ChangeDataWindow = create_window('Изменение данных о контакте', '500x500')
 
-            # Создаем кнопку для удаления контакта
-            create_button(ChangeDataWindow, 'Удалить контакт', delete_data, pady=10)
+                # Создаем кнопку для удаления контакта
+                create_button(ChangeDataWindow, 'Удалить контакт', delete_data, pady=10)
 
-            # Даем пользователю возможность изменить данные о контакте
-            PhoneBook.pop('№')
-            EntriesToChange = []
-            for key in PhoneBook.keys():
-                entry = create_entry(ChangeDataWindow, key, fpady=10)[1]
-                entry.insert(0, PhoneBook[key][IndexToChange])
-                EntriesToChange.append(entry)
+                # Даем пользователю возможность изменить данные о контакте
+                PhoneBook.pop('№')
+                EntriesToChange = []
+                for key in PhoneBook.keys():
+                    entry = create_entry(ChangeDataWindow, key, fpady=10)[1]
+                    entry.insert(0, PhoneBook[key][IndexToChange])
+                    EntriesToChange.append(entry)
 
-            # Создаем кнопки для сохранения и отмены изменений
-            create_button(ChangeDataWindow, 'Сохранить', save_changes)
-            create_button(ChangeDataWindow, 'Отменить', show_all, pady=10)
+                # Создаем кнопки для сохранения и отмены изменений
+                create_button(ChangeDataWindow, 'Сохранить', save_changes)
+                create_button(ChangeDataWindow, 'Отменить', show_all, pady=10)
+            
+            else:
+                IndexErrorWindow = create_window('Ошибка', '300x100')
+                IndexErrorLabel = tk.Label(IndexErrorWindow, 
+                                           text='Контакт с указанным индексом не существует')
+                IndexErrorLabel.pack(pady=10)
+                create_button(IndexErrorWindow, 'Назад', show_all, pady=10)
             
     # Создаем окно для вывода списка сохраненных контактов
     ShowAllWindow = create_window('Список сохраненных контактов', '700x500')
@@ -133,7 +141,7 @@ def show_all():
     # Получаем список сохраненных контактов
     PhoneBook = get_phone_book()
 
-    if PhoneBook:
+    if PhoneBook['№']:
         # Создаем окно для взаимодействия со списком сохраненных контактов
         InteractionFrame = tk.Frame(ShowAllWindow)
         InteractionFrame.pack(pady=10, padx=10, side='top')
@@ -177,16 +185,28 @@ def import_data():
     def save_data():
         PhoneBook = get_phone_book()
         PhoneBook.pop('№')
+        comments = PhoneBook.pop('Комментарий')
         PhoneBook = dict_to_list(PhoneBook)
         DataToSave = [data.get() for data in Entries]
 
         # Заносим новый контакт в список, если до этого его там не было
-        if DataToSave not in PhoneBook:
-            PhoneBook.append(DataToSave)
+        if DataToSave[:-1] not in PhoneBook:
+            PhoneBook.append(DataToSave[:-1])
+            comments.append(DataToSave[-1])
 
-        # Обновляем список контактов
-        update_data(PhoneBook)
-        import_data()
+            for i in range(len(PhoneBook)):
+                PhoneBook[i].append(comments[i])
+
+            # Обновляем список контактов
+            update_data(PhoneBook)
+            import_data()
+
+        else:
+            ContactAlreadyExistsWindow = create_window('Контакт уже существует', '300x100')
+            ContactAlreadyExistsLabel = tk.Label(ContactAlreadyExistsWindow, 
+                                                text='Данный контакт уже существует')
+            ContactAlreadyExistsLabel.pack(pady=10)
+            create_button(ContactAlreadyExistsWindow, 'Назад', import_data, pady=10)
 
     # Создаем окно для создания нового контакта
     ImportDataWindow = create_window('Введите данные о новом контакте', '400x300')
