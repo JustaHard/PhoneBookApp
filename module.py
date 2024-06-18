@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from tkinter import ttk
 
 CurrentWindow = None
@@ -210,7 +211,7 @@ def show_all():
 
                     # Создаем кнопку для возврата к таблице с контактами
                     create_button(IndexErrorWindow, 'Назад', show_all, pady=10)
-            except TypeError:
+            except ValueError:
                 # Создаем окно для вывода ошибки
                 DataTypeErrorWindow = create_window('Ошибка', '300x100')
 
@@ -271,6 +272,8 @@ def show_all():
 
         # Создаем кнопку для возврата на главный экран
         create_button(ShowAllWindow, 'Назад', show_main_window, pady=10, side='bottom')
+
+    ShowAllWindow.mainloop()
 
 def import_data():
     """
@@ -340,21 +343,23 @@ def get_phone_book(filepath='Saved_Data/Phone_book.txt'):
     
     data = []
 
-    # Получаем данные о существующих контактах
-    with open(filepath, 'r', encoding='utf-8') as phb:
-        for line in phb:
-            data.append(line.split(','))
+    # Проверяем, существует ли указанный файл
+    if os.path.exists(filepath):
+        # Получаем данные о существующих контактах
+        with open(filepath, 'r', encoding='utf-8') as phb:
+            for line in phb:
+                data.append(line.split(','))
 
-    # Убираем переходы на другую строку
-    for i in range(len(data)):
-        data[i] = list(data[i])
-        if '\n' in data[i][-1]:
-            data[i][-1] = data[i][-1].split('\n')
-            data[i][-1] = ''.join(element for element in data[i][-1])
+        # Убираем переходы на другую строку
+        for i in range(len(data)):
+            data[i] = list(data[i])
+            if '\n' in data[i][-1]:
+                data[i][-1] = data[i][-1].split('\n')
+                data[i][-1] = ''.join(element for element in data[i][-1])
 
-    # Добавляем индексы
-    for i in range(len(data)):
-        data[i].insert(0, i)
+        # Добавляем индексы
+        for i in range(len(data)):
+            data[i].insert(0, i)
 
     # Формируем словарь со всеми данными
     PhoneBook = list_to_dict(data)
@@ -373,6 +378,15 @@ def update_data(data, filepath='Saved_Data/Phone_book.txt'):
     if type(data) == dict:
         data = dict_to_list(data)
 
+    DirsToFile = '/'.join(filepath.split('/')[:-1])
+
+    # Проверяем, есть ли дополнительные папки в пути к указанному файлу
+    if DirsToFile:
+        # Если указанного файла не существует, создаем папки к этому файлу
+        if not os.path.exists(DirsToFile):
+            os.makedirs(DirsToFile)
+
+    # Записываем данные в указанный файл
     with open(filepath, 'w', encoding='utf-8') as phb:
             for line in data:
                 s = ','.join(str(data) for data in line)
