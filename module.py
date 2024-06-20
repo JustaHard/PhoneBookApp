@@ -19,7 +19,7 @@ def show_main_window():
     create_button(root, 'Добавить новый контакт', create_new_contact, pady=10)
 
     # Создаем кнопку для клонирования данных из другого файла
-    create_button(root, 'Импортировать данные из другого файла', import_data, pady=10)
+    create_button(root, 'Импортировать данные из другого файла', choose_file_to_clone_from, pady=10)
 
     # Создаем кнопку завершения работы
     create_button(root, 'Завершить работу', root.destroy, pady=10)
@@ -335,17 +335,17 @@ def create_new_contact():
     # Создаем кнопку возврата в главное меню
     create_button(CreateNewContactWindow, 'Назад', show_main_window, pady=10)
 
-def import_data():
+def choose_file_to_clone_from():
     """
     Импорт данных из стороннего файла
     """
 
-    def choose_lines():
+    def choose_lines_to_clone():
         """
         Выбор линий, которые надо импортировать из файла
         """
 
-        def import_from_file():
+        def clone_data():
             """
             Получаем данные из файла и сохраняем в базу данных
             """
@@ -354,29 +354,22 @@ def import_data():
             if ChooseLinesEntry.get():
                 # Преобразуем введенные данные в массив
                 LinesToImport = list(set(ChooseLinesEntry.get().replace(' ', '').split(',')))
+                LinesToImport = list(map(lambda x: int(x)-1, LinesToImport))
 
                 # Получаем список сохраненных контактов
                 PhoneBook = get_phone_book()
 
                 # Получаем информацию из указанного файла
-                FileData = get_phone_book(filepath=FilePath)
+                DataToImport = get_phone_book(filepath=FileToClone)
 
                 # Импортируем строки, которые можно импортировать
-                BadLines = {'Line':[], 'Reason':[]}
+                BadLines = list()
                 for i in range(len(LinesToImport)):
-                    try:
-                        if int(LinesToImport[i]) in FileData['№']:
-                            for key in PhoneBook.keys():
-                                PhoneBook[key].append(FileData[key][int(LinesToImport[i])])
-                        else:
-                            BadLines['Line'].append(LinesToImport[i])
-                            BadLines['Reason'].append('Строка не найдена')
-                    except ValueError:
-                        BadLines['Line'].append(LinesToImport[i])
-                        BadLines['Reason'].append('Неверный тип данных')
+                        for key in PhoneBook.keys():
+                            PhoneBook[key].append(DataToImport[key][int(LinesToImport[i])])
 
-                # Обновляем данные
-                update_data(PhoneBook.pop('№'))
+                PhoneBook.pop('№')
+                update_data(PhoneBook)
 
                 # Если не все указанные линии получилось импортировать, сообщаем об этом
                 if BadLines:
@@ -389,17 +382,17 @@ def import_data():
                     BadLinesLabel.pack(pady=10)
 
                     # Создаем кнопку возврата
-                    create_button(BadLinesWindow, 'Назад', import_data, pady=10)
+                    create_button(BadLinesWindow, 'Назад', choose_file_to_clone_from, pady=10)
 
                 else:
-                    import_data()
+                    choose_file_to_clone_from()
 
         # Проверяем, что поле для ввода не пустое
         if GetFilePathEntry.get():
-            FilePath = GetFilePathEntry.get()
+            FileToClone = GetFilePathEntry.get()
 
             # Проверяем, существует ли указанный файл
-            if os.path.exists(FilePath):
+            if os.path.exists(FileToClone):
                 # Создаем окно
                 ChooseLinesWindow = create_window('Импорт данных из другого файла',
                                                   '300x200')
@@ -408,10 +401,10 @@ def import_data():
                 ChooseLinesFrame, ChooseLinesEntry = create_entry(ChooseLinesWindow,
                         'Укажите линии, которые хотите импортировать', 
                         fpady=10)
-                create_button(ChooseLinesFrame, 'Выбор', import_from_file, pady=10)
+                create_button(ChooseLinesFrame, 'Выбор', clone_data, pady=10)
 
                 # Создаем кнопку для возврата
-                create_button(ChooseLinesWindow, 'Назад', import_data, pady=10)
+                create_button(ChooseLinesWindow, 'Назад', choose_file_to_clone_from, pady=10)
 
             else:
                 # Создаем окно
@@ -423,7 +416,7 @@ def import_data():
                 FileNotFoundLabel.pack(pady=10)
 
                 # Создаем кнопку для возврата
-                create_button(FileNotFoundWindow, 'Назад', import_data, pady=10)
+                create_button(FileNotFoundWindow, 'Назад', choose_file_to_clone_from, pady=10)
 
     # Создаем окно
     ImportDataWindow = create_window('Импорт данных из другого файла', '400x150')
@@ -432,7 +425,7 @@ def import_data():
     GetFilePathFrame, GetFilePathEntry = create_entry(ImportDataWindow, 
                             'Укажите путь к файлу, из которого хотите импортировать данные', 
                             fpady=10)
-    create_button(GetFilePathFrame, 'Ввод', choose_lines, pady=10)
+    create_button(GetFilePathFrame, 'Ввод', choose_lines_to_clone, pady=10)
 
     # Создаем кнопку для возврата на главный экран
     create_button(ImportDataWindow, 'Назад', show_main_window)
