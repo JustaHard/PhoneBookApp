@@ -289,35 +289,17 @@ def create_new_contact():
         # Получаем данные о ранее сохраненных контактах и приводим их в удобный вид
         PhoneBook = get_phone_book()
         PhoneBook.pop('№')
-        comments = PhoneBook.pop('Комментарий')
         PhoneBook = dict_to_list(PhoneBook)
 
         # Получаем данные о контакте, который нужно сохранить
         DataToSave = [data.get() for data in Entries]
 
-        # Заносим новый контакт в список, если до этого его там не было
-        if DataToSave[:-1] not in PhoneBook:
-            PhoneBook.append(DataToSave[:-1])
-            comments.append(DataToSave[-1])
-
-            for i in range(len(PhoneBook)):
-                PhoneBook[i].append(comments[i])
-
-            # Обновляем список контактов
-            update_data(PhoneBook)
-            create_new_contact()
-
-        else:
-            # Создаем окно, чтобы сообщить пользователю, что контакт уже существует
-            ContactAlreadyExistsWindow = create_window('Контакт уже существует', '300x100')
-
-            # Выводим сообщение
-            ContactAlreadyExistsLabel = tk.Label(ContactAlreadyExistsWindow, 
-                                                text='Данный контакт уже существует')
-            ContactAlreadyExistsLabel.pack(pady=10)
-
-            # Создаем кнопку для возврата к окну введения данных о новом контакте
-            create_button(ContactAlreadyExistsWindow, 'Назад', create_new_contact, pady=10)
+        # Заносим новый контакт в список
+        PhoneBook.append(DataToSave)
+        
+        # Обновляем список контактов
+        update_data(PhoneBook)
+        create_new_contact()
 
     # Создаем окно для создания нового контакта
     CreateNewContactWindow = create_window('Введите данные о новом контакте', '400x300')
@@ -354,31 +336,43 @@ def choose_file_to_clone_from():
             if ChooseLinesEntry.get():
                 # Преобразуем введенные данные в массив
                 LinesToImport = list(set(ChooseLinesEntry.get().replace(' ', '').split(',')))
-                LinesToImport = list(map(lambda x: int(x)-1, LinesToImport))
 
                 # Получаем список сохраненных контактов
-                PhoneBook = get_phone_book()
+                PhoneBook = get_phone_book(return_dict=False)
 
                 # Получаем информацию из указанного файла
-                DataToImport = get_phone_book(filepath=FileToClone)
+                DataToImportFrom = get_phone_book(filepath=FileToClone, return_dict=False)
 
-                # Импортируем строки, которые можно импортировать
+                # Избавляемся от некорректных значений
                 BadLines = list()
                 for i in range(len(LinesToImport)):
-                        for key in PhoneBook.keys():
-                            PhoneBook[key].append(DataToImport[key][int(LinesToImport[i])])
+                    try:
+                        LinesToImport[i] = int(LinesToImport[i])
+                        if (LinesToImport[i] - 1 not in range(len(DataToImportFrom)) 
+                            or len(DataToImportFrom[LinesToImport[i] - 1]) != 5):
+                                BadLines.append(LinesToImport[i])
+                    except ValueError:
+                        BadLines.append(LinesToImport[i])
+                for line in BadLines:
+                    LinesToImport.remove(line)
 
-                PhoneBook.pop('№')
-                update_data(PhoneBook)
+                # Добавляем новые контакты с список контактов
+                DataToImport = [DataToImportFrom[line - 1] for line in LinesToImport]
+                for data in DataToImport:
+                    PhoneBook.append(data)
+
+                update_data([line[1:] for line in PhoneBook])
 
                 # Если не все указанные линии получилось импортировать, сообщаем об этом
                 if BadLines:
                     # Создаем окно
-                    BadLinesWindow = create_window('Не все линии получилось импортировать')
+                    BadLinesWindow = create_window('Не все линии получилось импортировать', 
+                                                   '600x100')
                     
                     # Выводим сообщение
                     BadLinesLabel = tk.Label(BadLinesWindow, 
-                                        text=f'Не удалось импортировать линии {BadLines}')
+                                        text=f'Не удалось импортировать линии: {', '.join(
+                                            str(line) for line in BadLines)}')
                     BadLinesLabel.pack(pady=10)
 
                     # Создаем кнопку возврата
@@ -430,7 +424,7 @@ def choose_file_to_clone_from():
     # Создаем кнопку для возврата на главный экран
     create_button(ImportDataWindow, 'Назад', show_main_window)
 
-def get_phone_book(filepath='Saved_Data/Phone_book.txt'):
+def get_phone_book(filepath='Saved_Data/Phone_book.txt', return_dict=True):
     """
     Получение данных об уже сохраненных контактах
 
@@ -457,10 +451,13 @@ def get_phone_book(filepath='Saved_Data/Phone_book.txt'):
         for i in range(len(data)):
             data[i].insert(0, i)
 
-    # Формируем словарь со всеми данными
-    PhoneBook = list_to_dict(data)
+    if return_dict:
+        # Формируем словарь со всеми данными
+        PhoneBook = list_to_dict(data)
+        return PhoneBook
+    
+    return data
         
-    return PhoneBook
 
 def update_data(data, filepath='Saved_Data/Phone_book.txt'):
     """
@@ -473,6 +470,17 @@ def update_data(data, filepath='Saved_Data/Phone_book.txt'):
     # Если данные записаны в виде словаря, переводим их в вид массива
     if type(data) == dict:
         data = dict_to_list(data)
+
+    # Избавляемся от повторяющихся контактов
+    LinesToDelete = list()
+    for i in range(len(data)):
+        if i != 0:
+            for j in range(i):
+                if data[i][:-1] == data[j][:-1]:
+                    LinesToDelete.append(data[j])
+    if LinesToDelete:
+        for line in LinesToDelete:
+            data.remove(line)
 
     DirsToFile = '/'.join(filepath.split('/')[:-1])
 
