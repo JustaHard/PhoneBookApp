@@ -154,7 +154,8 @@ def show_all():
 
             # Вносим изменения в список контактов
             for i in range(len(PhoneBook)):
-                PhoneBook[list(PhoneBook.keys())[i]][IndexToChange] = EntriesToChange[i].get()
+                PhoneBook[list(PhoneBook.keys())[i]][IndexToChange] = (
+                    ContactInfoEntries[i].get())
 
             # Сохраняем изменения в файл и возвращаемся к списку контактов
             update_data(PhoneBook)
@@ -191,13 +192,13 @@ def show_all():
                     # Создаем кнопку для удаления контакта
                     create_button(ChangeDataWindow, 'Удалить контакт', delete_data, pady=10)
 
-                    # Даем пользователю возможность изменить данные о контакте
+                    # Выводим текущие данные о контакте с возможностью их изменения
                     PhoneBook.pop('№')
-                    EntriesToChange = []
+                    ContactInfoEntries = []
                     for key in PhoneBook.keys():
                         entry = create_entry(ChangeDataWindow, key, fpady=10)[1]
                         entry.insert(0, PhoneBook[key][IndexToChange])
-                        EntriesToChange.append(entry)
+                        ContactInfoEntries.append(entry)
 
                     # Создаем кнопки для сохранения и отмены изменений
                     create_button(ChangeDataWindow, 'Сохранить', save_changes)
@@ -306,8 +307,8 @@ def create_new_contact():
     
     # Создаем поля ввода для указания данных о новом контакте
     Entries = []
-    for i in ['Фамилия', 'Имя', 'Номер телефона', 'Комментарий']:
-        entry = create_entry(CreateNewContactWindow, i, fpady=10, fpadx=20, lside='left', 
+    for EntryName in ['Фамилия', 'Имя', 'Номер телефона', 'Комментарий']:
+        entry = create_entry(CreateNewContactWindow, EntryName, fpady=10, fpadx=20, lside='left', 
                              eside='left')[1]
         Entries.append(entry)
 
